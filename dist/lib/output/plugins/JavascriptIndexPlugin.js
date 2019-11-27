@@ -80,6 +80,7 @@ var JavascriptIndexPlugin = (function (_super) {
                 url: reflection.url,
                 classes: reflection.cssClasses
             };
+            console.log(row)
             if (parent_1) {
                 row.parent = parent_1.getFullName();
             }
