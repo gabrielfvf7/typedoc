@@ -75,12 +75,8 @@ var JavascriptIndexPlugin = (function (_super) {
                 id: rows.length,
                 kind: reflection.kind,
                 //realiza a busca aqui
-                name: reflection.name + (reflection.comment ?
-                    (reflection.comment.text.length === 0 ? ' (' + reflection.comment.shortText
-                        .split('<')
-                        .pop().split('>')[0] + ')' :
-                        ' (' + reflection.comment.text.split('<')
-                        .pop().split('>')[0]) : ''),
+                name: reflection.name + (' (' + reflection.comment && reflection.comment.tags && reflection.comment.tags[0].tagName === 'tag' ?
+                    reflection.comment.tags[0].text + ')' : ''),
                 url: reflection.url,
                 classes: reflection.cssClasses
             };
