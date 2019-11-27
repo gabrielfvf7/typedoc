@@ -1,6 +1,6 @@
-# TypeDoc
+# TypeDoc com tags
 
-> Documentation generator for TypeScript projects.
+> Fork do typedoc onde é possível usar tags entre <> de forma que a busca as ache.
 
 [![Build Status](https://travis-ci.org/TypeStrong/typedoc.svg?branch=master)](https://travis-ci.org/TypeStrong/typedoc)
 [![NPM Version](https://badge.fury.io/js/typedoc.svg)](http://badge.fury.io/js/typedoc)
