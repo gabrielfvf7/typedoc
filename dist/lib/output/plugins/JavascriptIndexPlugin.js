@@ -75,12 +75,15 @@ var JavascriptIndexPlugin = (function (_super) {
                 id: rows.length,
                 kind: reflection.kind,
                 //realiza a busca aqui
-                name: reflection.name + (' (' + reflection.comment && reflection.comment.tags && reflection.comment.tags[0].tagName === 'tag' ?
-                    reflection.comment.tags[0].text + ')' : ''),
+                name: reflection.name + (reflection.comment ?
+                    (reflection.comment.text.length === 0 ? ' (' + reflection.comment.shortText
+                        .split('<')
+                        .pop().split('>')[0] + ')' :
+                        ' (' + reflection.comment.text.split('<')
+                        .pop().split('>')[0]) : ''),
                 url: reflection.url,
                 classes: reflection.cssClasses
             };
-            console.log(row)
             if (parent_1) {
                 row.parent = parent_1.getFullName();
             }
