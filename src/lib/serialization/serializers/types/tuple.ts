@@ -6,8 +6,9 @@ import { TypeSerializerComponent } from '../../components';
 @Component({name: 'serializer:tuple-type'})
 export class TupleTypeSerializer extends TypeSerializerComponent<TupleType> {
 
-  supports(t: unknown) {
-    return t instanceof TupleType;
+  initialize(): void {
+    super.initialize();
+    this.supports = (t: TupleType) => t instanceof TupleType;
   }
 
   toObject(tuple: TupleType, obj?: any): any {

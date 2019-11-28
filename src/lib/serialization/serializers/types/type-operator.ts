@@ -6,8 +6,9 @@ import { TypeSerializerComponent } from '../../components';
 @Component({name: 'serializer:type-operator-type'})
 export class TypeOperatorTypeSerializer extends TypeSerializerComponent<TypeOperatorType> {
 
-  supports(t: unknown) {
-    return t instanceof TypeOperatorType;
+  initialize(): void {
+    super.initialize();
+    this.supports = (t: TypeOperatorType) => t instanceof TypeOperatorType;
   }
 
   toObject(typeOperator: TypeOperatorType, obj?: any): any {

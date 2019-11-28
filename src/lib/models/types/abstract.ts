@@ -32,7 +32,7 @@ export abstract class Type {
      * @deprecated Use serializers instead
      */
     toObject(): any {
-        const result: any = {};
+        let result: any = {};
         result.type = this.type;
 
         return result;
@@ -51,7 +51,7 @@ export abstract class Type {
      * @param a
      * @param b
      */
-    static isTypeListSimilar(a: Type[], b: Type[]): boolean {
+    static isTypeListSimiliar(a: Type[], b: Type[]): boolean {
         if (a.length !== b.length) {
             return false;
         }

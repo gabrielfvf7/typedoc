@@ -18,7 +18,7 @@ export class Resources {
 
     private theme: Theme;
 
-    private isActive = false;
+    private isActive: boolean;
 
     constructor(theme: Theme) {
         this.theme     = theme;

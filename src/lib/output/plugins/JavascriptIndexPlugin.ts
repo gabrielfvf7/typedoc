@@ -44,7 +44,7 @@ export class JavascriptIndexPlugin extends RendererComponent {
 
             let parent = reflection.parent;
             if (parent instanceof ProjectReflection) {
-                parent = undefined;
+                parent = null;
             }
 
             const row: any = {

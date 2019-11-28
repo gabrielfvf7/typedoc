@@ -1,13 +1,11 @@
 import * as FS from 'fs';
 import * as Path from 'path';
+import * as Util from 'util';
 
 import { Application } from '../application';
 import { AbstractComponent, Component, Option } from './component';
 import { ParameterType } from './options/declaration';
 
-/**
- * Responsible for discovering and loading plugins.
- */
 @Component({ name: 'plugin-host', internal: true })
 export class PluginHost extends AbstractComponent<Application> {
     @Option({
@@ -15,7 +13,7 @@ export class PluginHost extends AbstractComponent<Application> {
         help: 'Specify the npm plugins that should be loaded. Omit to load all installed plugins, set to \'none\' to load no plugins.',
         type: ParameterType.Array
     })
-    plugins!: string[];
+    plugins: string[];
 
     /**
      * Load the given list of npm plugins.
@@ -31,8 +29,6 @@ export class PluginHost extends AbstractComponent<Application> {
         let i: number, c: number = plugins.length;
         for (i = 0; i < c; i++) {
             const plugin = plugins[i];
-            // TSLint would be correct here, but it doesn't take into account user config files.
-            // tslint:disable-next-line:strict-type-predicates
             if (typeof plugin !== 'string') {
                 logger.error('Unknown plugin %s', plugin);
                 return false;
@@ -58,10 +54,8 @@ export class PluginHost extends AbstractComponent<Application> {
             } catch (error) {
                 logger.error('The plugin %s could not be loaded.', plugin);
                 logger.writeln(error.stack);
-                return false;
             }
         }
-        return true;
     }
 
     /**
@@ -134,8 +128,8 @@ export class PluginHost extends AbstractComponent<Application> {
          * Test whether the given package info describes a TypeDoc plugin.
          */
         function isPlugin(info: any): boolean {
-            const keywords: unknown[] = info.keywords;
-            if (!keywords || !Array.isArray(keywords)) {
+            const keywords: string[] = info.keywords;
+            if (!keywords || !Util.isArray(keywords)) {
                 return false;
             }
 

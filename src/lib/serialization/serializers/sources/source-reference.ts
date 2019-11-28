@@ -8,13 +8,12 @@ export class SourceReferenceContainerSerializer extends SerializerComponent<Sour
 
   static PRIORITY = 1000;
 
+  serializeGroup = instance => instance instanceof SourceReferenceWrapper;
   serializeGroupSymbol = SourceReferenceWrapper;
-  serializeGroup(instance: unknown) {
-      return instance instanceof SourceReferenceWrapper;
-  }
 
-  supports(t: unknown) {
-    return t instanceof SourceReferenceWrapper;
+  initialize(): void {
+      super.initialize();
+      this.supports = (s: SourceReferenceWrapper) => s instanceof SourceReferenceWrapper;
   }
 
   toObject(sourceReferenceContainer: SourceReferenceWrapper, obj?: any): any {

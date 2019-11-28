@@ -6,8 +6,9 @@ import { TypeSerializerComponent } from '../../components';
 @Component({name: 'serializer:type-parameter-type'})
 export class TypeParameterTypeSerializer extends TypeSerializerComponent<TypeParameterType> {
 
-  supports(t: unknown) {
-    return t instanceof TypeParameterType;
+  initialize(): void {
+    super.initialize();
+    this.supports = (t: TypeParameterType) => t instanceof TypeParameterType;
   }
 
   toObject(typeParameter: TypeParameterType, obj?: any): any {

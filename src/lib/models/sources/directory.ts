@@ -1,4 +1,5 @@
 import { Reflection } from '../reflections/abstract';
+import { ReflectionCategory } from '../ReflectionCategory';
 import { ReflectionGroup } from '../ReflectionGroup';
 import { SourceFile } from './file';
 
@@ -11,16 +12,18 @@ import { SourceFile } from './file';
  */
 export class SourceDirectory {
     /**
-     * The parent directory or undefined if this is a root directory.
+     * The parent directory or NULL if this is a root directory.
      */
-    parent?: SourceDirectory;
+    parent: SourceDirectory = null;
 
     /**
      * A list of all subdirectories.
      */
     directories: {[name: string]: SourceDirectory} = {};
 
-    groups?: ReflectionGroup[];
+    groups: ReflectionGroup[];
+
+    categories: ReflectionCategory[];
 
     /**
      * A list of all files in this directory.
@@ -30,17 +33,17 @@ export class SourceDirectory {
     /**
      * The name of this directory.
      */
-    name?: string;
+    name: string = null;
 
     /**
      * The relative path from the root directory to this directory.
      */
-    dirName?: string;
+    dirName: string = null;
 
     /**
      * The url of the page displaying the directory contents.
      */
-    url?: string;
+    url: string;
 
     /**
      * Create a new SourceDirectory instance.
@@ -65,7 +68,7 @@ export class SourceDirectory {
     toString(indent: string = '') {
         let res = indent + this.name;
 
-        for (const key in this.directories) {
+        for (let key in this.directories) {
             if (!this.directories.hasOwnProperty(key)) {
                 continue;
             }

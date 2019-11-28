@@ -1,12 +1,14 @@
 /**
  * This is an internal function.
  */
-function internalFunction(): void { }
+function internalFunction():void { }
+
 
 /**
  * This is a simple exported function.
  */
-export function exportedFunction(): void { }
+export function exportedFunction():void { }
+
 
 /**
  * This is a function with multiple arguments and a return value.
@@ -25,9 +27,10 @@ export function exportedFunction(): void { }
  *
  * @returns This is the return value of the function.
  */
-export function functionWithParameters(paramZ: string, paramG: any, paramA: Object): number {
+export function functionWithParameters(paramZ:string, paramG:any, paramA:Object):number {
     return 0;
 }
+
 
 /**
  * This is a function that is assigned to a variable.
@@ -35,9 +38,10 @@ export function functionWithParameters(paramZ: string, paramG: any, paramA: Obje
  * @param someParam  This is some numeric parameter.
  * @return This is the return value of the function.
  */
-export const variableFunction = function(someParam: number): number {
+export const variableFunction = function(someParam:number):number {
     return 0;
 };
+
 
 /**
  * This is a function with a parameter that is optional.
@@ -45,7 +49,8 @@ export const variableFunction = function(someParam: number): number {
  * @param requiredParam  A normal parameter.
  * @param optionalParam  An optional parameter.
  */
-export function functionWithOptionalValue(requiredParam: string, optionalParam?: string) { }
+export function functionWithOptionalValue(requiredParam:string, optionalParam?:string) { }
+
 
 /**
  * This is a function with a parameter that has a default value.
@@ -58,14 +63,15 @@ export function functionWithOptionalValue(requiredParam: string, optionalParam?:
  * @return This is the return value of the function.
  */
 export function functionWithDefaults(
-    valueA: string = 'defaultValue',
-    valueB: number = 100,
-    valueC: number = Number.NaN,
-    valueD: boolean = true,
-    valueE: boolean = null
-): string {
+    valueA:string = 'defaultValue',
+    valueB:number = 100,
+    valueC:number = Number.NaN,
+    valueD:boolean = true,
+    valueE:boolean = null
+):string {
     return valueA;
 }
+
 
 /**
  * This is a function with rest parameter.
@@ -73,16 +79,17 @@ export function functionWithDefaults(
  * @param rest  The rest parameter.
  * @return This is the return value of the function.
  */
-function functionWithRest(...rest: string[]): string {
+function functionWithRest(...rest:string[]):string {
     return rest.join(', ');
 }
+
 
 /**
  * This is the first signature of a function with multiple signatures.
  *
  * @param value  The name value.
  */
-export function multipleSignatures(value: string): string;
+export function multipleSignatures(value:string):string;
 
 /**
  * This is the second signature of a function with multiple signatures.
@@ -90,7 +97,7 @@ export function multipleSignatures(value: string): string;
  * @param value       An object containing the name value.
  * @param value.name  A value of the object.
  */
-export function multipleSignatures(value: {name: string}): string;
+export function multipleSignatures(value:{name:string}):string;
 
 /**
  * This is the actual implementation, this comment will not be visible
@@ -98,9 +105,9 @@ export function multipleSignatures(value: {name: string}): string;
  *
  * @return This is the return value of the function.
  */
-export function multipleSignatures(): string {
+export function multipleSignatures():string {
     if (arguments.length > 0) {
-        if (typeof arguments[0] === 'object') {
+        if (typeof arguments[0] == 'object') {
             return arguments[0].name;
         } else {
             return arguments[0];
@@ -110,54 +117,25 @@ export function multipleSignatures(): string {
     return '';
 }
 
+
 /**
  * This is a function that is extended by a module.
  *
  * @param arg An argument.
  */
-export function moduleFunction(arg: string): string { return ''; }
+export function moduleFunction(arg:string):string { return ''; }
 
-/**
- * This is an assertion function.
- *
- * @param condition The condition that is asserted to be true when this function returns.
- */
-export function assertionFunction(condition: boolean): asserts condition { }
-
-/**
- * Assertion function with a type.
- * @param anything
- */
-export function checkerFunction(anything: any): anything is string {
-    return typeof anything === 'string';
-}
-
-/**
- * Asserts that an argument is not null.
- * @param arg
- */
-export function assertIsNonNull<T>(arg: T | null | undefined): asserts arg is T {
-    if (arg == null) {
-        throw new Error('Was nullable');
-    }
-}
-
-/**
- * Checks that an argument is not null.
- * @param arg
- */
-export function isNonNull<T>(arg: T | null | undefined): arg is T {
-    return arg != null;
-}
 
 /**
  * This is the module extending the function moduleFunction().
  */
-export module moduleFunction {
+export module moduleFunction
+{
     /**
      * This variable is appended to a function.
      */
-    let functionVariable: string;
+    let functionVariable:string;
+
 
     /**
      * This function is appended to another function.

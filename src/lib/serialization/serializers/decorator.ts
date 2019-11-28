@@ -11,18 +11,17 @@ export class DecoratorContainerSerializer extends SerializerComponent<DecoratorW
   /**
    * Filter for instances of [[DecoratorWrapper]]
    */
-  serializeGroup(instance: any): boolean {
+  protected static serializeGroup(instance: any): boolean {
     return instance instanceof DecoratorWrapper;
   }
 
+  // use same fn for every instance
+  serializeGroup = DecoratorContainerSerializer.serializeGroup;
   serializeGroupSymbol = DecoratorWrapper;
 
   initialize(): void {
       super.initialize();
-  }
-
-  supports(s: unknown) {
-    return s instanceof DecoratorWrapper;
+      this.supports = (s: DecoratorWrapper) => s instanceof DecoratorWrapper;
   }
 
   toObject(decoratorWrapper: DecoratorWrapper, obj?: any): any {

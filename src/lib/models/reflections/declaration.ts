@@ -3,7 +3,6 @@ import { Type, ReflectionType } from '../types/index';
 import { ContainerReflection } from './container';
 import { SignatureReflection } from './signature';
 import { TypeParameterReflection } from './type-parameter';
-import { toArray } from 'lodash';
 
 /**
  * Stores hierarchical type data.
@@ -40,9 +39,9 @@ export class DeclarationReflection extends ContainerReflection implements Defaul
      * If the reflection represents a variable or a property, this is the value type.<br />
      * If the reflection represents a signature, this is the return type.
      */
-    type?: Type;
+    type: Type;
 
-    typeParameters?: TypeParameterReflection[];
+    typeParameters: TypeParameterReflection[];
 
     /**
      * A list of call signatures attached to this declaration.
@@ -50,76 +49,76 @@ export class DeclarationReflection extends ContainerReflection implements Defaul
      * TypeDoc creates one declaration per function that may contain ore or more
      * signature reflections.
      */
-    signatures?: SignatureReflection[];
+    signatures: SignatureReflection[];
 
     /**
      * The index signature of this declaration.
      */
-    indexSignature?: SignatureReflection;
+    indexSignature: SignatureReflection;
 
     /**
      * The get signature of this declaration.
      */
-    getSignature?: SignatureReflection;
+    getSignature: SignatureReflection;
 
     /**
      * The set signature of this declaration.
      */
-    setSignature?: SignatureReflection;
+    setSignature: SignatureReflection;
 
     /**
      * The default value of this reflection.
      *
      * Applies to function parameters.
      */
-    defaultValue?: string;
+    defaultValue: string;
 
     /**
      * A type that points to the reflection that has been overwritten by this reflection.
      *
      * Applies to interface and class members.
      */
-    overwrites?: Type;
+    overwrites: Type;
 
     /**
      * A type that points to the reflection this reflection has been inherited from.
      *
      * Applies to interface and class members.
      */
-    inheritedFrom?: Type;
+    inheritedFrom: Type;
 
     /**
      * A type that points to the reflection this reflection is the implementation of.
      *
      * Applies to class members.
      */
-    implementationOf?: Type;
+    implementationOf: Type;
 
     /**
      * A list of all types this reflection extends (e.g. the parent classes).
      */
-    extendedTypes?: Type[];
+    extendedTypes: Type[];
 
     /**
      * A list of all types that extend this reflection (e.g. the subclasses).
      */
-    extendedBy?: Type[];
+    extendedBy: Type[];
 
     /**
      * A list of all types this reflection implements.
      */
-    implementedTypes?: Type[];
+    implementedTypes: Type[];
 
     /**
      * A list of all types that implement this reflection.
      */
-    implementedBy?: Type[];
+    implementedBy: Type[];
 
     /**
      * Contains a simplified representation of the type hierarchy suitable for being
      * rendered in templates.
      */
-    typeHierarchy?: DeclarationHierarchy;
+    typeHierarchy: DeclarationHierarchy;
 
     hasGetterOrSetter(): boolean {
         return !!this.getSignature || !!this.setSignature;
@@ -153,40 +152,28 @@ export class DeclarationReflection extends ContainerReflection implements Defaul
      * @param callback  The callback function that should be applied for each child reflection.
      */
     traverse(callback: TraverseCallback) {
-        for (const parameter of toArray(this.typeParameters)) {
-            if (callback(parameter, TraverseProperty.TypeParameter) === false) {
-                return;
-            }
+        if (this.typeParameters) {
+            this.typeParameters.slice().forEach((parameter) => callback(parameter, TraverseProperty.TypeParameter));
         }
 
         if (this.type instanceof ReflectionType) {
-            if (callback(this.type.declaration, TraverseProperty.TypeLiteral) === false) {
-                return;
-            }
+            callback(this.type.declaration, TraverseProperty.TypeLiteral);
         }
 
-        for (const signature of toArray(this.signatures)) {
-            if (callback(signature, TraverseProperty.Signatures) === false) {
-                return;
-            }
+        if (this.signatures) {
+            this.signatures.slice().forEach((signature) => callback(signature, TraverseProperty.Signatures));
         }
 
         if (this.indexSignature) {
-            if (callback(this.indexSignature, TraverseProperty.IndexSignature) === false) {
-                return;
-            }
+            callback(this.indexSignature, TraverseProperty.IndexSignature);
         }
 
         if (this.getSignature) {
-            if (callback(this.getSignature, TraverseProperty.GetSignature) === false) {
-                return;
-            }
+            callback(this.getSignature, TraverseProperty.GetSignature);
         }
 
         if (this.setSignature) {
-            if (callback(this.setSignature, TraverseProperty.SetSignature) === false) {
-                return;
-            }
+            callback(this.setSignature, TraverseProperty.SetSignature);
         }
 
         super.traverse(callback);
@@ -197,7 +184,7 @@ export class DeclarationReflection extends ContainerReflection implements Defaul
      * @deprecated Use serializers instead
      */
     toObject(): any {
-        const result = super.toObject();
+        let result = super.toObject();
 
         if (this.type) {
             result.type = this.type.toObject();

@@ -21,7 +21,12 @@ export class BindingArrayConverter extends ConverterTypeComponent implements Typ
      * @returns The type reflection representing the given binding pattern.
      */
     convertNode(context: Context, node: ts.BindingPattern): Type {
-        const types = this.owner.convertTypes(context, node.elements);
+        const types: Type[] = [];
+
+        (node.elements as ts.NodeArray<ts.BindingElement>).forEach((element) => {
+            types.push(this.owner.convertType(context, element));
+        });
+
         return new TupleType(types);
     }
 }

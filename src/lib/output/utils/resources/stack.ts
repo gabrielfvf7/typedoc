@@ -66,8 +66,12 @@ export class ResourceOrigin<T extends Resource> {
         return name in this.resources;
     }
 
-    getResource(name: string): T | undefined {
-        return this.resources[name];
+    getResource(name: string): T {
+        if (name in this.resources) {
+            return this.resources[name];
+        } else {
+            return null;
+        }
     }
 
     getName(): string {
@@ -76,7 +80,7 @@ export class ResourceOrigin<T extends Resource> {
 
     private findResources(dir?: string) {
         const resourceClass   = this.stack.getResourceClass();
-        const resourceRegExp = this.stack.getResourceRegExp();
+        const ressourceRegExp = this.stack.getRessourceRegExp();
         let path = this.path;
         if (dir) {
             path = Path.join(path, dir);
@@ -87,7 +91,7 @@ export class ResourceOrigin<T extends Resource> {
 
             if (FS.statSync(fullName).isDirectory()) {
                 this.findResources(dir ? Path.join(dir, fileName) : fileName);
-            } else if (resourceRegExp.test(fileName)) {
+            } else if (ressourceRegExp.test(fileName)) {
                 const name: string = normalizeName(dir ? Path.join(dir, fileName) : fileName);
                 this.resources[name] = new resourceClass(this, name, fullName);
             }
@@ -96,20 +100,20 @@ export class ResourceOrigin<T extends Resource> {
 }
 
 export abstract class ResourceStack<T extends Resource> {
-    private isActive = false;
+    private isActive: boolean;
 
-    private resourceClass: ResourceClass<T>;
+    private ressourceClass: ResourceClass<T>;
 
-    private resourceRegExp: RegExp;
+    private ressourceRegExp: RegExp;
 
     /**
      * A list of all source directories.
      */
     private origins: ResourceOrigin<T>[] = [];
 
-    constructor(resourceClass: ResourceClass<T>, resourceRegExp?: RegExp) {
-        this.resourceClass  = resourceClass;
-        this.resourceRegExp = resourceRegExp || /.*/;
+    constructor(ressourceClass: ResourceClass<T>, ressourceRegExp?: RegExp) {
+        this.ressourceClass  = ressourceClass;
+        this.ressourceRegExp = ressourceRegExp || /.*/;
     }
 
     activate(): boolean {
@@ -131,7 +135,7 @@ export abstract class ResourceStack<T extends Resource> {
     /**
      * Return a resource by its name.
      */
-    getResource(name: string): T | undefined {
+    getResource(name: string): T {
         const normalizedName = normalizeName(name);
         let index = this.origins.length - 1;
 
@@ -157,23 +161,25 @@ export abstract class ResourceStack<T extends Resource> {
     }
 
     getResourceClass(): ResourceClass<T> {
-        return this.resourceClass;
+        return this.ressourceClass;
     }
 
-    getResourceRegExp(): RegExp {
-        return this.resourceRegExp;
+    getRessourceRegExp(): RegExp {
+        return this.ressourceRegExp;
     }
 
-    getOrigin(name: string): ResourceOrigin<T> | undefined {
+    getOrigin(name: string): ResourceOrigin<T> {
         for (let origin of this.origins) {
             if (origin.getName() === name) {
                 return origin;
             }
         }
+
+        return null;
     }
 
     hasOrigin(name: string): boolean {
-        return !!this.getOrigin(name);
+        return this.getOrigin(name) !== null;
     }
 
     /**

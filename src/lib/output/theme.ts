@@ -50,7 +50,7 @@ import { Resources } from './utils/resources';
  *   this theme.
  */
 @Component({name: 'theme', internal: true})
-export abstract class Theme extends RendererComponent {
+export class Theme extends RendererComponent {
     /**
      * The base path of this theme.
      */
@@ -88,7 +88,9 @@ export abstract class Theme extends RendererComponent {
      *
      * @see [[Renderer.prepareOutputDirectory]]
      */
-    abstract isOutputDirectory(path: string): boolean;
+    isOutputDirectory(path: string): boolean {
+        return false;
+    }
 
     /**
      * Map the models of the given project to the desired output files.
@@ -100,7 +102,9 @@ export abstract class Theme extends RendererComponent {
      * @returns        A list of [[UrlMapping]] instances defining which models
      *                 should be rendered to which files.
      */
-    abstract getUrls(project: ProjectReflection): UrlMapping[];
+    getUrls(project: ProjectReflection): UrlMapping[] {
+        return [];
+    }
 
     /**
      * Create a navigation structure for the given project.
@@ -115,5 +119,7 @@ export abstract class Theme extends RendererComponent {
      * @param project  The project whose navigation should be generated.
      * @returns        The root navigation item.
      */
-    abstract getNavigation(project: ProjectReflection): NavigationItem;
+    getNavigation(project: ProjectReflection): NavigationItem {
+        return null;
+    }
 }

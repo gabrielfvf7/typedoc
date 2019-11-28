@@ -8,11 +8,11 @@ import * as _ts from '../ts-internal';
  * @returns The default value as a string.
  */
 
-export function convertDefaultValue(node: ts.VariableDeclaration|ts.ParameterDeclaration|ts.EnumMember): string | undefined {
+export function convertDefaultValue(node: ts.VariableDeclaration|ts.ParameterDeclaration|ts.EnumMember): string {
     if (node.initializer) {
         return convertExpression(node.initializer);
     } else {
-        return undefined;
+        return null;
     }
 }
 
@@ -27,7 +27,7 @@ export function convertExpression(expression: ts.Expression): string {
         case ts.SyntaxKind.FalseKeyword:
             return 'false';
         default:
-            const source = expression.getSourceFile();
+            const source = _ts.getSourceFileOfNode(<ts.Node> expression);
             return source.text.substring(expression.pos, expression.end);
     }
 }

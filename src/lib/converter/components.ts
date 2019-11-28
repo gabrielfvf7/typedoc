@@ -6,7 +6,7 @@ import { Type } from '../models/types/abstract';
 import { Context } from './context';
 import { Converter } from './converter';
 
-export { Component };
+export {Component};
 
 export abstract class ConverterComponent extends AbstractComponent<Converter> { }
 
@@ -14,9 +14,9 @@ export abstract class ConverterNodeComponent<T extends ts.Node> extends Converte
     /**
      * List of supported TypeScript syntax kinds.
      */
-    abstract supports: ts.SyntaxKind[];
+    supports: ts.SyntaxKind[];
 
-    abstract convert(context: Context, node: T): Reflection | undefined;
+    abstract convert(context: Context, node: T): Reflection;
 }
 
 export abstract class ConverterTypeComponent extends ConverterComponent {
@@ -39,17 +39,17 @@ export interface TypeTypeConverter<T extends ts.Type> extends ConverterTypeCompo
     /**
      * Convert the given type to its type reflection.
      */
-    convertType(context: Context, type: T): Type | undefined;
+    convertType(context: Context, type: T): Type;
 }
 
 export interface TypeNodeConverter<T extends ts.Type, N extends ts.Node> extends ConverterTypeComponent {
     /**
      * Test whether this converter can handle the given TypeScript node.
      */
-    supportsNode(context: Context, node: N, type: T | undefined): boolean;
+    supportsNode(context: Context, node: N, type: T): boolean;
 
     /**
      * Convert the given type node to its type reflection.
      */
-    convertNode(context: Context, node: N, type: T | undefined): Type | undefined;
+    convertNode(context: Context, node: N, type: T): Type;
 }

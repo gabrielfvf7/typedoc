@@ -6,15 +6,11 @@
       "es5",
       "es2015.core",
       "es2015.collection",
-      "es2015.iterable",
-      "es2016.array.include" // Supported by Node 6+
+      "es2015.iterable"
     ],
-    "target": "es2015",
+    "target": "es5",
     "noImplicitAny": false,
-    "downlevelIteration": true,
     "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
     "removeComments": true,
     "noUnusedLocals": true,
     "preserveConstEnums": true,
@@ -30,8 +26,6 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "src/test/converter/**/*.ts",
-    "src/test/.dot/**/*.ts",
-    "src/test/module/**/*.ts"
+    "src/test/converter/**/*.ts"
   ]
 }

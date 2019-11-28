@@ -1,10 +1,8 @@
 import * as ts from 'typescript';
-import { IMinimatch } from 'minimatch';
+import { Minimatch, IMinimatch } from 'minimatch';
 
 import { Logger } from '../utils/loggers';
-import { createMinimatch } from '../utils/paths';
 import { Reflection, ProjectReflection, ContainerReflection, Type } from '../models/index';
-
 import { createTypeParameter } from './factories/type-parameter';
 import { Converter } from './converter';
 
@@ -45,42 +43,42 @@ export class Context {
     /**
      * Is the current source file marked as being external?
      */
-    isExternal?: boolean;
+    isExternal: boolean;
 
     /**
      * Is the current source file a declaration file?
      */
-    isDeclaration?: boolean;
+    isDeclaration: boolean;
 
     /**
      * The currently set type parameters.
      */
-    typeParameters?: ts.MapLike<Type>;
+    typeParameters: ts.MapLike<Type>;
 
     /**
      * The currently set type arguments.
      */
-    typeArguments?: Type[];
+    typeArguments: Type[];
 
     /**
      * Is the converter in inheritance mode?
      */
-    isInherit?: boolean;
+    isInherit: boolean;
 
     /**
      * The node that has started the inheritance mode.
      */
-    inheritParent?: ts.Node;
+    inheritParent: ts.Node;
 
     /**
      * List symbol ids of inherited children already visited while inheriting.
      */
-    inheritedChildren?: number[];
+    inheritedChildren: number[];
 
     /**
      * The names of the children of the scope before inheritance has been started.
      */
-    inherited?: string[];
+    inherited: string[];
 
     /**
      * A list of parent nodes that have been passed to the visit function.
@@ -95,7 +93,7 @@ export class Context {
     /**
      * The pattern that should be used to flag external source files.
      */
-    private externalPattern?: Array<IMinimatch>;
+    private externalPattern: IMinimatch;
 
     /**
      * Create a new Context instance.
@@ -116,7 +114,7 @@ export class Context {
         this.scope = project;
 
         if (converter.externalPattern) {
-            this.externalPattern = createMinimatch(converter.externalPattern);
+            this.externalPattern = new Minimatch(converter.externalPattern);
         }
     }
 
@@ -133,8 +131,8 @@ export class Context {
      * @param node  The TypeScript node whose type should be resolved.
      * @returns The type declaration of the given node.
      */
-    getTypeAtLocation(node: ts.Node): ts.Type | undefined {
-        let nodeType: ts.Type | undefined;
+    getTypeAtLocation(node: ts.Node): ts.Type {
+        let nodeType: ts.Type;
         try {
             nodeType = this.checker.getTypeAtLocation(node);
         } catch (error) {
@@ -167,11 +165,11 @@ export class Context {
      * It will assign negative ids if they are not set.
      *
      * @param symbol  The symbol whose id should be returned.
-     * @returns The id of the given symbol or undefined if no symbol is provided.
+     * @returns The id of the given symbol.
      */
-    getSymbolID(symbol: ts.Symbol | undefined): number | undefined {
+    getSymbolID(symbol: ts.Symbol): number {
         if (!symbol) {
-            return;
+            return null;
         }
         if (!symbol.id) {
             symbol.id = this.symbolID--;
@@ -189,10 +187,10 @@ export class Context {
      * @param node  The node the given reflection was resolved from.
      * @param symbol  The symbol the given reflection was resolved from.
      */
-    registerReflection(reflection: Reflection, node?: ts.Node, symbol?: ts.Symbol) {
+    registerReflection(reflection: Reflection, node: ts.Node, symbol?: ts.Symbol) {
         this.project.reflections[reflection.id] = reflection;
 
-        const id = this.getSymbolID(symbol ? symbol : (node ? node.symbol : undefined));
+        const id = this.getSymbolID(symbol ? symbol : (node ? node.symbol : null));
         if (!this.isInherit && id && !this.project.symbolMapping[id]) {
             this.project.symbolMapping[id] = reflection.id;
         }
@@ -218,16 +216,17 @@ export class Context {
      * @param callback  The callback that should be executed.
      */
     withSourceFile(node: ts.SourceFile, callback: Function) {
-        let isExternal = !this.fileNames.includes(node.fileName);
-        if (!isExternal && this.externalPattern) {
-            isExternal = this.externalPattern.some(mm => mm.match(node.fileName));
+        const externalPattern = this.externalPattern;
+        let isExternal = this.fileNames.indexOf(node.fileName) === -1;
+        if (externalPattern) {
+            isExternal = isExternal || externalPattern.match(node.fileName);
         }
 
         if (isExternal && this.converter.excludeExternals) {
             return;
         }
 
-        const isDeclaration = node.isDeclarationFile;
+        let isDeclaration = node.isDeclarationFile;
         if (isDeclaration) {
             const lib = this.converter.getDefaultLib();
             const isLib = node.fileName.substr(-lib.length) === lib;
@@ -249,27 +248,20 @@ export class Context {
     /**
      * @param callback  The callback function that should be executed with the changed context.
      */
-    public withScope(scope: Reflection | undefined, callback: () => void): void;
+    public withScope(scope: Reflection, callback: Function): void;
 
     /**
      * @param parameters  An array of type parameters that should be set on the context while the callback is invoked.
      * @param callback  The callback function that should be executed with the changed context.
      */
-    public withScope(
-        scope: Reflection | undefined,
-        parameters: ts.NodeArray<ts.TypeParameterDeclaration> | undefined,
-        callback: () => void): void;
+    public withScope(scope: Reflection, parameters: ts.NodeArray<ts.TypeParameterDeclaration>, callback: Function): void;
 
     /**
      * @param parameters  An array of type parameters that should be set on the context while the callback is invoked.
      * @param preserve  Should the currently set type parameters of the context be preserved?
      * @param callback  The callback function that should be executed with the changed context.
      */
-    public withScope(
-        scope: Reflection | undefined,
-        parameters: ts.NodeArray<ts.TypeParameterDeclaration> | undefined,
-        preserve: boolean,
-        callback: () => void): void;
+    public withScope(scope: Reflection, parameters: ts.NodeArray<ts.TypeParameterDeclaration>, preserve: boolean, callback: Function): void;
 
     /**
      * Run the given callback with the scope of the context set to the given reflection.
@@ -289,7 +281,7 @@ export class Context {
 
         this.scope = scope;
         this.typeParameters = parameters ? this.extractTypeParameters(parameters, args.length > 0) : this.typeParameters;
-        this.typeArguments = undefined;
+        this.typeArguments = null;
 
         callback();
 
@@ -321,8 +313,8 @@ export class Context {
         }
 
         if (baseNode.symbol) {
-            const id = this.getSymbolID(baseNode.symbol)!;
-            if (this.inheritedChildren && this.inheritedChildren.includes(id)) {
+            const id = this.getSymbolID(baseNode.symbol);
+            if (this.inheritedChildren && this.inheritedChildren.indexOf(id) !== -1) {
                 return target;
             } else {
                 this.inheritedChildren = this.inheritedChildren || [];
@@ -337,9 +329,9 @@ export class Context {
         }
 
         if (typeArguments) {
-            this.typeArguments = this.converter.convertTypes(this, typeArguments);
+            this.typeArguments = typeArguments.map((t) => this.converter.convertType(this, t));
         } else {
-            this.typeArguments = undefined;
+            this.typeArguments = null;
         }
 
         this.converter.convertNode(this, baseNode);
@@ -367,23 +359,20 @@ export class Context {
         const typeParameters: ts.MapLike<Type> = {};
 
         if (preserve) {
-            Object.keys(this.typeParameters || {}).forEach(key => {
-                typeParameters[key] = this.typeParameters![key];
-            });
+            for (let key in this.typeParameters) {
+                if (!this.typeParameters.hasOwnProperty(key)) {
+                    continue;
+                }
+                typeParameters[key] = this.typeParameters[key];
+            }
         }
 
         parameters.forEach((declaration: ts.TypeParameterDeclaration, index: number) => {
-            if (!declaration.symbol) {
-                return;
-            }
             const name = declaration.symbol.name;
             if (this.typeArguments && this.typeArguments[index]) {
                 typeParameters[name] = this.typeArguments[index];
             } else {
-                const param = createTypeParameter(this, declaration);
-                if (param) {
-                    typeParameters[name] = param;
-                }
+                typeParameters[name] = createTypeParameter(this, declaration);
             }
         });
 

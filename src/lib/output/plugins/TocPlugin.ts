@@ -63,7 +63,7 @@ export class TocPlugin extends RendererComponent {
         } else {
             children.forEach((child: DeclarationReflection) => {
 
-                if (restriction && restriction.length > 0 && !restriction.includes(child.name)) {
+                if (restriction && restriction.length > 0 && restriction.indexOf(child.name) === -1) {
                     return;
                 }
 
@@ -72,7 +72,7 @@ export class TocPlugin extends RendererComponent {
                 }
 
                 const item = NavigationItem.create(child, parent, true);
-                if (trail.includes(child)) {
+                if (trail.indexOf(child) !== -1) {
                     item.isInPath  = true;
                     item.isCurrent = (trail[trail.length - 1] === child);
                     TocPlugin.buildToc(child, trail, item);

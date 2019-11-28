@@ -8,8 +8,9 @@ export class TypeSerializer extends TypeSerializerComponent<Type> {
 
   static PRIORITY = 1000;
 
-  supports(t: unknown) {
-    return t instanceof Type;
+  initialize(): void {
+    super.initialize();
+    this.supports = (t: Type) => true;
   }
 
   toObject(type: Type, obj?: any): any {

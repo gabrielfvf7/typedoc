@@ -6,8 +6,9 @@ import { TypeSerializerComponent } from '../../components';
 @Component({name: 'serializer:array-type'})
 export class ArrayTypeSerializer extends TypeSerializerComponent<ArrayType> {
 
-  supports(t: unknown) {
-    return t instanceof ArrayType;
+  initialize(): void {
+    super.initialize();
+    this.supports = (t: ArrayType) => t instanceof ArrayType;
   }
 
   toObject(arrayType: ArrayType, obj?: any): any {

@@ -207,12 +207,13 @@ export class DefaultTheme extends Theme {
          */
         function includeDedicatedUrls(reflection: DeclarationReflection, item: NavigationItem) {
             (function walk(reflection: DeclarationReflection) {
-                for (const child of reflection.children || []) {
+                for (let key in reflection.children) {
+                    const child = reflection.children[key];
                     if (child.hasOwnDocument && !child.kindOf(ReflectionKind.SomeModule)) {
                         if (!item.dedicatedUrls) {
                             item.dedicatedUrls = [];
                         }
-                        item.dedicatedUrls.push(child.url!);
+                        item.dedicatedUrls.push(child.url);
                         walk(child);
                     }
                 }
@@ -254,10 +255,10 @@ export class DefaultTheme extends Theme {
 
             reflections.forEach((reflection) => {
                 if (hasExternals && !reflection.flags.isExternal && state !== 1) {
-                    new NavigationItem('Internals', undefined, parent, 'tsd-is-external');
+                    new NavigationItem('Internals', null, parent, 'tsd-is-external');
                     state = 1;
                 } else if (hasExternals && reflection.flags.isExternal && state !== 2) {
-                    new NavigationItem('Externals', undefined, parent, 'tsd-is-external');
+                    new NavigationItem('Externals', null, parent, 'tsd-is-external');
                     state = 2;
                 }
 
@@ -331,8 +332,8 @@ export class DefaultTheme extends Theme {
                 DefaultTheme.applyReflectionClasses(reflection);
             }
 
-            if (reflection instanceof ContainerReflection && reflection.groups) {
-                reflection.groups.forEach(DefaultTheme.applyGroupClasses);
+            if (reflection instanceof ContainerReflection && reflection['groups']) {
+                reflection['groups'].forEach(DefaultTheme.applyGroupClasses);
             }
         }
     }
@@ -360,10 +361,17 @@ export class DefaultTheme extends Theme {
      * Return the template mapping fore the given reflection.
      *
      * @param reflection  The reflection whose mapping should be resolved.
-     * @returns           The found mapping or undefined if no mapping could be found.
+     * @returns           The found mapping or NULL if no mapping could be found.
      */
-    static getMapping(reflection: DeclarationReflection): TemplateMapping | undefined {
-        return DefaultTheme.MAPPINGS.find(mapping => reflection.kindOf(mapping.kind));
+    static getMapping(reflection: DeclarationReflection): TemplateMapping {
+        for (let i = 0, c = DefaultTheme.MAPPINGS.length; i < c; i++) {
+            const mapping = DefaultTheme.MAPPINGS[i];
+            if (reflection.kindOf(mapping.kind)) {
+                return mapping;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -384,14 +392,15 @@ export class DefaultTheme extends Theme {
                 reflection.hasOwnDocument = true;
             }
 
-            for (const child of reflection.children || []) {
+            for (let key in reflection.children) {
+                const child = reflection.children[key];
                 if (mapping.isLeaf) {
                     DefaultTheme.applyAnchorUrl(child, reflection);
                 } else {
                     DefaultTheme.buildUrls(child, urls);
                 }
             }
-        } else if (reflection.parent) {
+        } else {
             DefaultTheme.applyAnchorUrl(reflection, reflection.parent);
         }
 

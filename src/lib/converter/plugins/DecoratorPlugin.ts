@@ -12,10 +12,7 @@ import { Context } from '../context';
  */
 @Component({name: 'decorator'})
 export class DecoratorPlugin extends ConverterComponent {
-    /**
-     * Defined in this.onBegin
-     */
-    private usages!: {[symbolID: number]: ReferenceType[]};
+    private usages: {[symbolID: number]: ReferenceType[]};
 
     /**
      * Create a new ImplementsPlugin instance.
@@ -36,17 +33,17 @@ export class DecoratorPlugin extends ConverterComponent {
      * @param signature  The signature definition of the decorator being used.
      * @returns An object describing the decorator parameters,
      */
-    private extractArguments(args: ts.NodeArray<ts.Expression>, signature: ts.Signature): { [name: string]: string | string[] } {
+    private extractArguments(args: ts.NodeArray<ts.Expression>, signature: ts.Signature): any {
         const result = {};
         args.forEach((arg: ts.Expression, index: number) => {
             if (index < signature.parameters.length) {
                 const parameter = signature.parameters[index];
-                result[parameter.name] = arg.getText();
+                result[parameter.name] = _ts.getTextOfNode(arg);
             } else {
                 if (!result['...']) {
                     result['...'] = [];
                 }
-                result['...'].push(arg.getText());
+                result['...'].push(_ts.getTextOfNode(arg));
             }
         });
 
@@ -74,7 +71,7 @@ export class DecoratorPlugin extends ConverterComponent {
             return;
         }
         node.decorators.forEach((decorator: ts.Decorator) => {
-            let callExpression: ts.CallExpression | undefined;
+            let callExpression: ts.CallExpression;
             let identifier: ts.Expression;
 
             switch (decorator.expression.kind) {
@@ -90,12 +87,12 @@ export class DecoratorPlugin extends ConverterComponent {
             }
 
             const info: Decorator = {
-                name: identifier.getText()
+                name: _ts.getTextOfNode(identifier)
             };
 
             const type = context.checker.getTypeAtLocation(identifier);
             if (type && type.symbol) {
-                const symbolID = context.getSymbolID(type.symbol)!;
+                const symbolID = context.getSymbolID(type.symbol);
                 info.type = new ReferenceType(info.name, symbolID);
 
                 if (callExpression && callExpression.arguments) {
@@ -125,7 +122,7 @@ export class DecoratorPlugin extends ConverterComponent {
      * @param reflection  The reflection that is currently resolved.
      */
     private onBeginResolve(context: Context) {
-        for (const symbolID in this.usages) {
+        for (let symbolID in this.usages) {
             if (!this.usages.hasOwnProperty(symbolID)) {
                 continue;
             }

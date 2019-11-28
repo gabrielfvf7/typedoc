@@ -22,27 +22,27 @@ export class PackagePlugin extends ConverterComponent {
         name: 'readme',
         help: 'Path to the readme file that should be displayed on the index page. Pass `none` to disable the index page and start the documentation on the globals page.'
     })
-    readme!: string;
+    readme: string;
 
     /**
      * The file name of the found readme.md file.
      */
-    private readmeFile?: string;
+    private readmeFile: string;
 
     /**
      * The file name of the found package.json file.
      */
-    private packageFile?: string;
+    private packageFile: string;
 
     /**
      * List of directories the handler already inspected.
      */
-    private visited!: string[];
+    private visited: string[];
 
     /**
      * Should the readme file be ignored?
      */
-    private noReadmeFile?: boolean;
+    private noReadmeFile: boolean;
 
     /**
      * Create a new PackageHandler instance.
@@ -61,9 +61,9 @@ export class PackagePlugin extends ConverterComponent {
      * @param context  The context object describing the current state the converter is in.
      */
     private onBegin(context: Context) {
-        this.readmeFile = undefined;
-        this.packageFile = undefined;
-        this.visited = [];
+        this.readmeFile  = null;
+        this.packageFile = null;
+        this.visited     = [];
 
         let readme = this.readme;
         this.noReadmeFile = (readme === 'none');
@@ -83,31 +83,35 @@ export class PackagePlugin extends ConverterComponent {
      * @param node  The node that is currently processed if available.
      */
     private onBeginDocument(context: Context, reflection: Reflection, node?: ts.SourceFile) {
-        const packageAndReadmeFound = () => (this.noReadmeFile || this.readmeFile) && this.packageFile;
-        const reachedTopDirectory = dirName => dirName === Path.resolve(Path.join(dirName, '..'));
-        const visitedDirBefore = dirName => this.visited.includes(dirName);
-
         if (!node) {
+            return;
+        }
+        if (this.readmeFile && this.packageFile) {
             return;
         }
 
         const fileName = node.fileName;
-        let dirName = Path.resolve(Path.dirname(fileName));
-        while (!packageAndReadmeFound() && !reachedTopDirectory(dirName) && !visitedDirBefore(dirName)) {
+        let dirName: string, parentDir = Path.resolve(Path.dirname(fileName));
+        do {
+            dirName = parentDir;
+            if (this.visited.indexOf(dirName) !== -1) {
+                break;
+            }
+
             FS.readdirSync(dirName).forEach((file) => {
-                const lowercaseFileName = file.toLowerCase();
-                if (!this.noReadmeFile && !this.readmeFile && lowercaseFileName === 'readme.md') {
+                const lfile = file.toLowerCase();
+                if (!this.noReadmeFile && !this.readmeFile && lfile === 'readme.md') {
                     this.readmeFile = Path.join(dirName, file);
                 }
 
-                if (!this.packageFile && lowercaseFileName === 'package.json') {
+                if (!this.packageFile && lfile === 'package.json') {
                     this.packageFile = Path.join(dirName, file);
                 }
             });
 
             this.visited.push(dirName);
-            dirName = Path.resolve(Path.join(dirName, '..'));
-        }
+            parentDir = Path.resolve(Path.join(dirName, '..'));
+        } while (dirName !== parentDir);
     }
 
     /**

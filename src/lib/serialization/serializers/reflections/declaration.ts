@@ -9,8 +9,9 @@ export class DeclarationReflectionSerializer extends ReflectionSerializerCompone
 
   static PRIORITY = ContainerReflectionSerializer.PRIORITY - 1; // mimic inheritance, run after parent
 
-  supports(t: unknown) {
-    return t instanceof DeclarationReflection;
+  initialize(): void {
+    super.initialize();
+    this.supports = (r: DeclarationReflection) => r instanceof DeclarationReflection;
   }
 
   toObject(declaration: DeclarationReflection, obj?: any): any {

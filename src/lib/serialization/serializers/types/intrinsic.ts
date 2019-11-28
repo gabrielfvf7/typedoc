@@ -6,8 +6,9 @@ import { TypeSerializerComponent } from '../../components';
 @Component({name: 'serializer:intrinsic-type'})
 export class IntrinsicTypeSerializer extends TypeSerializerComponent<IntrinsicType> {
 
-  supports(t: unknown) {
-    return t instanceof IntrinsicType;
+  initialize(): void {
+    super.initialize();
+    this.supports = (t: IntrinsicType) => t instanceof IntrinsicType;
   }
 
   toObject(intrinsic: IntrinsicType, obj?: any): any {

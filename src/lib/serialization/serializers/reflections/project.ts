@@ -9,8 +9,9 @@ export class ProjectReflectionSerializer extends ReflectionSerializerComponent<P
 
   static PRIORITY = ContainerReflectionSerializer.PRIORITY - 1; // mimic inheritance, run after parent
 
-  supports(t: unknown) {
-    return t instanceof ProjectReflection;
+  initialize(): void {
+    super.initialize();
+    this.supports = (r: ProjectReflection) => r instanceof ProjectReflection;
   }
 
   toObject(container: ProjectReflection, obj?: any): any {

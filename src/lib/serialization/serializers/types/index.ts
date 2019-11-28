@@ -2,7 +2,6 @@ export * from './abstract';
 export * from './array';
 export * from './intersection-union';
 export * from './intrinsic';
-export * from './predicate';
 export * from './reference';
 export * from './reflection';
 export * from './string-literal';

@@ -22,9 +22,12 @@ export class BindingObjectConverter extends ConverterTypeComponent implements Ty
      * @returns The type reflection representing the given binding pattern.
      */
     convertNode(context: Context, node: ts.BindingPattern): Type {
-        const declaration = new DeclarationReflection('__type', ReflectionKind.TypeLiteral, context.scope);
+        const declaration = new DeclarationReflection();
+        declaration.kind = ReflectionKind.TypeLiteral;
+        declaration.name = '__type';
+        declaration.parent = context.scope;
 
-        context.registerReflection(declaration);
+        context.registerReflection(declaration, null);
         context.trigger(Converter.EVENT_CREATE_DECLARATION, declaration, node);
         context.withScope(declaration, () => {
             (node.elements as ts.NodeArray<ts.BindingElement>).forEach((element) => {

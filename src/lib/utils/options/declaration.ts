@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 export enum ParameterHint {
     File,
     Directory
@@ -15,15 +13,9 @@ export enum ParameterType {
 }
 
 export enum ParameterScope {
-    TypeDoc,
-    TypeScript
+    TypeDoc, TypeScript
 }
 
-/**
- * Option-bag passed to Option decorator.
- *
- * TODO: This should be a union type of multiple possible option types.
- */
 export interface DeclarationOption {
     name: string;
     component?: string;
@@ -32,34 +24,32 @@ export interface DeclarationOption {
     type?: ParameterType;
     hint?: ParameterHint;
     scope?: ParameterScope;
-    map?: 'object' | Map<string | number, any> | { [ key: string]: any };
+    map?: {};
     mapError?: string;
     defaultValue?: any;
     convert?: (param: OptionDeclaration, value?: any) => any;
 }
 
-/**
- * Runtime structure describing a configuration option.
- * Used by option parsing and validation.
- */
 export class OptionDeclaration {
-    name!: string;
+    name: string;
 
-    component?: string;
+    short: string;
 
-    short?: string;
+    component: string;
 
-    help!: string;
+    help: string;
 
-    type: ParameterType = ParameterType.String;
+    type: ParameterType;
 
-    hint?: ParameterHint;
+    hint: ParameterHint;
 
-    scope: ParameterScope = ParameterScope.TypeDoc;
+    scope: ParameterScope;
 
-    protected map?: { [k: string]: any } | 'object';
+    protected map: Object | Map<string, any> | 'object';
 
-    mapError?: string;
+    mapError: string;
+
+    isArray: boolean;
 
     defaultValue: any;
 
@@ -67,6 +57,9 @@ export class OptionDeclaration {
         for (let key in data) {
             this[key] = data[key];
         }
+
+        this.type  = this.type  || ParameterType.String;
+        this.scope = this.scope || ParameterScope.TypeDoc;
     }
 
     getNames(): string[] {
@@ -79,42 +72,35 @@ export class OptionDeclaration {
         return result;
     }
 
-    /**
-     *
-     * @param value the value the user passed in
-     * @param errorCallback
-     */
-    convert(value: unknown, errorCallback?: (format: string, ...args: string[]) => void): any {
+    convert(value: any, errorCallback?: Function): any {
         switch (this.type) {
             case ParameterType.Number:
-                value = parseInt(value + '', 10);
+                value = parseInt(value, 10);
                 break;
             case ParameterType.Boolean:
-                value = !!value;
+                value = (typeof value === void 0 ? true : !!value);
                 break;
             case ParameterType.String:
-                value = value ? value + '' : '';
+                value = value || '';
                 break;
             case ParameterType.Array:
                 if (!value) {
                     value = [];
-                // TSLint *should* be correct here, but tslint doesn't know about user config files.
-                // tslint:disable-next-line:strict-type-predicates
                 } else if (typeof value === 'string') {
                     value = value.split(',');
                 }
                 break;
             case ParameterType.Map:
-                const map = this.map || {};
+                const map = this.map;
                 if (map !== 'object') {
                     const key = value ? (value + '').toLowerCase() : '';
-                    const values = _.values(map);
+                    const values = Object.keys(map).map(key => map[key]);
 
                     if (map instanceof Map) {
                         value = map.has(key) ? map.get(key) : value;
                     } else if (key in map) {
                         value = map[key];
-                    } else if (!values.includes(value) && errorCallback) {
+                    } else if (values.indexOf(value) === -1 && errorCallback) {
                         if (this.mapError) {
                             errorCallback(this.mapError);
                         } else {

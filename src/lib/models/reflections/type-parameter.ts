@@ -3,15 +3,15 @@ import { Reflection, ReflectionKind, TypeContainer } from './abstract';
 import { DeclarationReflection } from './declaration';
 
 export class TypeParameterReflection extends Reflection implements TypeContainer {
-    parent?: DeclarationReflection;
+    parent: DeclarationReflection;
 
-    type?: Type;
+    type: Type;
 
     /**
      * Create a new TypeParameterReflection instance.
      */
-    constructor(type: TypeParameterType, parent?: Reflection) {
-        super(type.name, ReflectionKind.TypeParameter, parent);
+    constructor(parent?: Reflection, type?: TypeParameterType) {
+        super(parent, type.name, ReflectionKind.TypeParameter);
         this.type = type.constraint;
     }
 

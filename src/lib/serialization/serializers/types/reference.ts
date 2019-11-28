@@ -6,8 +6,9 @@ import { TypeSerializerComponent } from '../../components';
 @Component({name: 'serializer:reference-type'})
 export class ReferenceTypeSerializer extends TypeSerializerComponent<ReferenceType> {
 
-  supports(t: unknown) {
-    return t instanceof ReferenceType;
+  initialize(): void {
+    super.initialize();
+    this.supports = (t: ReferenceType) => t instanceof ReferenceType;
   }
 
   toObject(reference: ReferenceType, obj?: any): any {

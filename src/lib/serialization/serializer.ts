@@ -21,8 +21,8 @@ export class Serializer extends ChildableComponent<Application, SerializerCompon
    */
   static EVENT_END = 'end';
 
-  private router!: Map<any, { symbol: any, group: SerializerComponent<any>[] }>;
-  private routes!: any[];
+  private router: Map<any, { symbol: any, group: SerializerComponent<any>[] }>;
+  private routes: any[];
 
   initialize(): void {
     this.router = new Map<any, { symbol: any, group: SerializerComponent<any>[] }>();
@@ -43,16 +43,16 @@ export class Serializer extends ChildableComponent<Application, SerializerCompon
       }
       match.group.push(component);
       match.group.sort((a, b) => (b.priority || 0) - (a.priority || 0));
-    }
 
-    return component;
+      return component;
+    }
   }
 
   /**
    * Remove a child component from the registry.
    * @param name The name the component registered as
    */
-  removeComponent(name: string): SerializerComponent<any> | undefined {
+  removeComponent(name: string): SerializerComponent<any> {
     const component = super.removeComponent(name);
     const symbol = component && component.serializeGroupSymbol;
     if (symbol) {
@@ -87,20 +87,22 @@ export class Serializer extends ChildableComponent<Application, SerializerCompon
    * @return {any}
    */
   projectToObject(value: ProjectReflection, eventData?: { begin?: any, end?: any }): any {
-    const eventBegin = new SerializeEvent(Serializer.EVENT_BEGIN, value);
+    const eventBegin = new SerializeEvent(Serializer.EVENT_BEGIN);
 
     if (eventData && eventData.begin) {
       Object.assign(eventBegin, eventData.begin);
     }
+    eventBegin.project = value;
     let project: any = eventBegin.output = {};
 
     this.trigger(eventBegin);
     project = this.toObject(value, project);
 
-    const eventEnd = new SerializeEvent(Serializer.EVENT_END, value);
+    const eventEnd = new SerializeEvent(Serializer.EVENT_END);
     if (eventData && eventData.end) {
       Object.assign(eventEnd, eventData.end);
     }
+    eventEnd.project = value;
     eventEnd.output = project;
     this.trigger(eventEnd);
 
@@ -108,10 +110,10 @@ export class Serializer extends ChildableComponent<Application, SerializerCompon
   }
 
   private findRoutes(value: any): SerializerComponent<any>[] {
-    const routes: SerializerComponent<any>[] = [];
+    const routes = [];
     for (let i = 0, len = this.routes.length; i < len; i++) {
       if (this.routes[i](value)) {
-        const serializers = this.router.get(this.routes[i])!.group;
+        const serializers = this.router.get(this.routes[i]).group;
         for (let serializer of serializers) {
           if (serializer.supports(value)) {
             routes.push(serializer);

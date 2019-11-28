@@ -1,8 +1,7 @@
 export { Type } from './abstract';
 export { ArrayType } from './array';
-export { IntersectionType } from './intersection';
 export { IntrinsicType } from './intrinsic';
-export { PredicateType } from './predicate';
+export { IntersectionType } from './intersection';
 export { ReferenceType } from './reference';
 export { ReflectionType } from './reflection';
 export { StringLiteralType } from './string-literal';

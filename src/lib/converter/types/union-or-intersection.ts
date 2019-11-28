@@ -34,9 +34,14 @@ export class UnionOrIntersectionConverter extends ConverterTypeComponent impleme
      * @returns The type reflection representing the given union type node.
      */
     convertNode(context: Context, node: ts.UnionOrIntersectionTypeNode): UnionType | IntersectionType {
-        const types: Type[] = this.owner.convertTypes(context, node.types);
+        let types: Type[] = [];
+        if (node.types) {
+            types = node.types.map((n) => this.owner.convertType(context, n));
+        } else {
+            types = [];
+        }
 
-        return ts.isIntersectionTypeNode(node) ? new IntersectionType(types) : new UnionType(types);
+        return node.kind === ts.SyntaxKind.IntersectionType ? new IntersectionType(types) : new UnionType(types);
     }
 
     /**
@@ -53,7 +58,13 @@ export class UnionOrIntersectionConverter extends ConverterTypeComponent impleme
      * @returns The type reflection representing the given union type.
      */
     convertType(context: Context, type: ts.UnionOrIntersectionType): UnionType | IntersectionType {
-        const types: Type[] = this.owner.convertTypes(context, undefined, type.types);
-        return type.flags & ts.TypeFlags.Intersection ? new IntersectionType(types) : new UnionType(types);
+        let types: Type[];
+        if (type && type.types) {
+            types = type.types.map((t) => this.owner.convertType(context, null, t));
+        } else {
+            types = [];
+        }
+
+        return !!(type.flags & ts.TypeFlags.Intersection) ? new IntersectionType(types) : new UnionType(types);
     }
 }

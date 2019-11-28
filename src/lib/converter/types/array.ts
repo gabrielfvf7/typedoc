@@ -39,11 +39,10 @@ export class ArrayConverter extends ConverterTypeComponent implements TypeConver
      * @param node  The array type node that should be converted.
      * @returns The type reflection representing the given array type node.
      */
-    convertNode(context: Context, node: ts.ArrayTypeNode): Type | undefined {
+    convertNode(context: Context, node: ts.ArrayTypeNode): Type {
         const result = this.owner.convertType(context, node.elementType);
-        if (result) {
-            return new ArrayType(result);
-        }
+
+        return new ArrayType(result);
     }
 
     /**
@@ -60,10 +59,9 @@ export class ArrayConverter extends ConverterTypeComponent implements TypeConver
      * @param type  The type reference that should be converted.
      * @returns The type reflection representing the given type reference.
      */
-    convertType(context: Context, type: ts.TypeReference): Type | undefined {
-        const result = this.owner.convertType(context, undefined, type.typeArguments && type.typeArguments[0]);
-        if (result) {
-            return new ArrayType(result);
-        }
+    convertType(context: Context, type: ts.TypeReference): Type {
+        const result = this.owner.convertType(context, null, type.typeArguments[0]);
+
+        return new ArrayType(result);
     }
 }

@@ -59,7 +59,7 @@
           ],
           "children": [
             {
-              "id": 52,
+              "id": 38,
               "name": "functionVariable",
               "kind": 32,
               "kindString": "Variable",
@@ -72,7 +72,7 @@
               "sources": [
                 {
                   "fileName": "function.ts",
-                  "line": 160,
+                  "line": 137,
                   "character": 24
                 }
               ],
@@ -82,14 +82,14 @@
               }
             },
             {
-              "id": 53,
+              "id": 39,
               "name": "append",
               "kind": 64,
               "kindString": "Function",
               "flags": {},
               "signatures": [
                 {
-                  "id": 54,
+                  "id": 40,
                   "name": "append",
                   "kind": 4096,
                   "kindString": "Call signature",
@@ -106,20 +106,20 @@
               "sources": [
                 {
                   "fileName": "function.ts",
-                  "line": 165,
+                  "line": 143,
                   "character": 19
                 }
               ]
             },
             {
-              "id": 55,
+              "id": 41,
               "name": "prepend",
               "kind": 64,
               "kindString": "Function",
               "flags": {},
               "signatures": [
                 {
-                  "id": 56,
+                  "id": 42,
                   "name": "prepend",
                   "kind": 4096,
                   "kindString": "Call signature",
@@ -136,7 +136,7 @@
               "sources": [
                 {
                   "fileName": "function.ts",
-                  "line": 172,
+                  "line": 150,
                   "character": 20
                 }
               ]
@@ -147,205 +147,28 @@
               "title": "Variables",
               "kind": 32,
               "children": [
-                52
+                38
               ]
             },
             {
               "title": "Functions",
               "kind": 64,
               "children": [
-                53,
-                55
+                39,
+                41
               ]
             }
           ],
           "sources": [
             {
               "fileName": "function.ts",
-              "line": 118,
+              "line": 126,
               "character": 30
             },
             {
               "fileName": "function.ts",
-              "line": 156,
+              "line": 132,
               "character": 28
-            }
-          ]
-        },
-        {
-          "id": 44,
-          "name": "assertIsNonNull",
-          "kind": 64,
-          "kindString": "Function",
-          "flags": {
-            "isExported": true
-          },
-          "signatures": [
-            {
-              "id": 45,
-              "name": "assertIsNonNull",
-              "kind": 4096,
-              "kindString": "Call signature",
-              "flags": {},
-              "comment": {
-                "shortText": "Asserts that an argument is not null."
-              },
-              "typeParameter": [
-                {
-                  "id": 46,
-                  "name": "T",
-                  "kind": 131072,
-                  "kindString": "Type parameter",
-                  "flags": {}
-                }
-              ],
-              "parameters": [
-                {
-                  "id": 47,
-                  "name": "arg",
-                  "kind": 32768,
-                  "kindString": "Parameter",
-                  "flags": {},
-                  "comment": {
-                    "text": "\n"
-                  },
-                  "type": {
-                    "type": "union",
-                    "types": [
-                      {
-                        "type": "typeParameter",
-                        "name": "T"
-                      },
-                      {
-                        "type": "intrinsic",
-                        "name": "null"
-                      },
-                      {
-                        "type": "intrinsic",
-                        "name": "undefined"
-                      }
-                    ]
-                  }
-                }
-              ],
-              "type": {
-                "type": "predicate",
-                "name": "arg",
-                "asserts": true,
-                "targetType": {
-                  "type": "typeParameter",
-                  "name": "T"
-                }
-              }
-            }
-          ],
-          "sources": [
-            {
-              "fileName": "function.ts",
-              "line": 139,
-              "character": 31
-            }
-          ]
-        },
-        {
-          "id": 38,
-          "name": "assertionFunction",
-          "kind": 64,
-          "kindString": "Function",
-          "flags": {
-            "isExported": true
-          },
-          "signatures": [
-            {
-              "id": 39,
-              "name": "assertionFunction",
-              "kind": 4096,
-              "kindString": "Call signature",
-              "flags": {},
-              "comment": {
-                "shortText": "This is an assertion function."
-              },
-              "parameters": [
-                {
-                  "id": 40,
-                  "name": "condition",
-                  "kind": 32768,
-                  "kindString": "Parameter",
-                  "flags": {},
-                  "comment": {
-                    "text": "The condition that is asserted to be true when this function returns.\n"
-                  },
-                  "type": {
-                    "type": "intrinsic",
-                    "name": "boolean"
-                  }
-                }
-              ],
-              "type": {
-                "type": "predicate",
-                "name": "condition",
-                "asserts": true
-              }
-            }
-          ],
-          "sources": [
-            {
-              "fileName": "function.ts",
-              "line": 125,
-              "character": 33
-            }
-          ]
-        },
-        {
-          "id": 41,
-          "name": "checkerFunction",
-          "kind": 64,
-          "kindString": "Function",
-          "flags": {
-            "isExported": true
-          },
-          "signatures": [
-            {
-              "id": 42,
-              "name": "checkerFunction",
-              "kind": 4096,
-              "kindString": "Call signature",
-              "flags": {},
-              "comment": {
-                "shortText": "Assertion function with a type."
-              },
-              "parameters": [
-                {
-                  "id": 43,
-                  "name": "anything",
-                  "kind": 32768,
-                  "kindString": "Parameter",
-                  "flags": {},
-                  "comment": {
-                    "text": "\n"
-                  },
-                  "type": {
-                    "type": "intrinsic",
-                    "name": "any"
-                  }
-                }
-              ],
-              "type": {
-                "type": "predicate",
-                "name": "anything",
-                "asserts": false,
-                "targetType": {
-                  "type": "intrinsic",
-                  "name": "string"
-                }
-              }
-            }
-          ],
-          "sources": [
-            {
-              "fileName": "function.ts",
-              "line": 131,
-              "character": 31
             }
           ]
         },
@@ -353,7 +176,6 @@
           "id": 4,
           "name": "exportedFunction",
           "kind": 64,
-          "kindString": "Function",
           "flags": {
             "isExported": true
           },
@@ -362,7 +184,6 @@
               "id": 5,
               "name": "exportedFunction",
               "kind": 4096,
-              "kindString": "Call signature",
               "flags": {},
               "comment": {
                 "shortText": "This is a simple exported function."
@@ -375,8 +196,8 @@
           ],
           "sources": [
             {
-              "fileName": "function.ts",
-              "line": 9,
+              "fileName": "%BASE%/function/function.ts",
+              "line": 10,
               "character": 32
             }
           ]
@@ -486,7 +307,7 @@
           "sources": [
             {
               "fileName": "function.ts",
-              "line": 60,
+              "line": 65,
               "character": 36
             }
           ]
@@ -550,7 +371,7 @@
           "sources": [
             {
               "fileName": "function.ts",
-              "line": 48,
+              "line": 52,
               "character": 41
             }
           ]
@@ -627,7 +448,7 @@
           "sources": [
             {
               "fileName": "function.ts",
-              "line": 28,
+              "line": 30,
               "character": 38
             }
           ]
@@ -679,7 +500,7 @@
           "sources": [
             {
               "fileName": "function.ts",
-              "line": 76,
+              "line": 82,
               "character": 25
             }
           ]
@@ -710,81 +531,6 @@
             {
               "fileName": "function.ts",
               "line": 4,
-              "character": 25
-            }
-          ]
-        },
-        {
-          "id": 48,
-          "name": "isNonNull",
-          "kind": 64,
-          "kindString": "Function",
-          "flags": {
-            "isExported": true
-          },
-          "signatures": [
-            {
-              "id": 49,
-              "name": "isNonNull",
-              "kind": 4096,
-              "kindString": "Call signature",
-              "flags": {},
-              "comment": {
-                "shortText": "Checks that an argument is not null."
-              },
-              "typeParameter": [
-                {
-                  "id": 50,
-                  "name": "T",
-                  "kind": 131072,
-                  "kindString": "Type parameter",
-                  "flags": {}
-                }
-              ],
-              "parameters": [
-                {
-                  "id": 51,
-                  "name": "arg",
-                  "kind": 32768,
-                  "kindString": "Parameter",
-                  "flags": {},
-                  "comment": {
-                    "text": "\n"
-                  },
-                  "type": {
-                    "type": "union",
-                    "types": [
-                      {
-                        "type": "typeParameter",
-                        "name": "T"
-                      },
-                      {
-                        "type": "intrinsic",
-                        "name": "null"
-                      },
-                      {
-                        "type": "intrinsic",
-                        "name": "undefined"
-                      }
-                    ]
-                  }
-                }
-              ],
-              "type": {
-                "type": "predicate",
-                "name": "arg",
-                "asserts": false,
-                "targetType": {
-                  "type": "typeParameter",
-                  "name": "T"
-                }
-              }
-            }
-          ],
-          "sources": [
-            {
-              "fileName": "function.ts",
-              "line": 149,
               "character": 25
             }
           ]
@@ -874,8 +620,8 @@
                           "sources": [
                             {
                               "fileName": "function.ts",
-                              "line": 93,
-                              "character": 47
+                              "line": 100,
+                              "character": 46
                             }
                           ],
                           "type": {
@@ -896,7 +642,7 @@
                       "sources": [
                         {
                           "fileName": "function.ts",
-                          "line": 93,
+                          "line": 100,
                           "character": 41
                         }
                       ]
@@ -913,17 +659,17 @@
           "sources": [
             {
               "fileName": "function.ts",
-              "line": 85,
+              "line": 92,
               "character": 34
             },
             {
               "fileName": "function.ts",
-              "line": 93,
+              "line": 100,
               "character": 34
             },
             {
               "fileName": "function.ts",
-              "line": 101,
+              "line": 108,
               "character": 34
             }
           ]
@@ -977,7 +723,7 @@
           "sources": [
             {
               "fileName": "function.ts",
-              "line": 38,
+              "line": 41,
               "character": 29
             }
           ]
@@ -995,16 +741,12 @@
           "title": "Functions",
           "kind": 64,
           "children": [
-            44,
-            38,
-            41,
             4,
             18,
             14,
             6,
             25,
             2,
-            48,
             28,
             11
           ]

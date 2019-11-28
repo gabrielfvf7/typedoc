@@ -103,7 +103,7 @@ export class GroupPlugin extends ConverterComponent {
         function walkDirectory(directory: SourceDirectory) {
             directory.groups = GroupPlugin.getReflectionGroups(directory.getAllReflections());
 
-            for (const key in directory.directories) {
+            for (let key in directory.directories) {
                 if (!directory.directories.hasOwnProperty(key)) {
                     continue;
                 }
@@ -158,7 +158,7 @@ export class GroupPlugin extends ConverterComponent {
                 allExternal  = child.flags.isExternal && allExternal;
 
                 if (child instanceof DeclarationReflection) {
-                    allInherited = !!child.inheritedFrom && allInherited;
+                    allInherited = child.inheritedFrom && allInherited;
                 } else {
                     allInherited = false;
                 }

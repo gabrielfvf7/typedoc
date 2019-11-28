@@ -8,8 +8,9 @@ export type IntersectionUnion = IntersectionType | UnionType;
 @Component({name: 'serializer:intersection-type'})
 export class IntersectionTypeSerializer extends TypeSerializerComponent<IntersectionUnion> {
 
-  supports(t: unknown) {
-    return t instanceof IntersectionType || t instanceof UnionType;
+  initialize(): void {
+    super.initialize();
+    this.supports = (t: IntersectionUnion) => t instanceof IntersectionType || t instanceof UnionType;
   }
 
   toObject(intersectionUnion: IntersectionUnion, obj?: any): any {

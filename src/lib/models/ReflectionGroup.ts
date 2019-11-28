@@ -1,5 +1,4 @@
 import { Reflection, ReflectionKind } from './reflections/abstract';
-import { ReflectionCategory } from './ReflectionCategory';
 
 /**
  * A group of reflections. All reflections in a group are of the same kind.
@@ -28,7 +27,7 @@ export class ReflectionGroup {
      * A list of generated css classes that should be applied to representations of this
      * group in the generated markup.
      */
-    cssClasses?: string;
+    cssClasses: string;
 
     /**
      * Do all children of this group have a separate document?
@@ -41,32 +40,27 @@ export class ReflectionGroup {
     /**
      * Are all children inherited members?
      */
-    allChildrenAreInherited?: boolean;
+    allChildrenAreInherited: boolean;
 
     /**
      * Are all children private members?
      */
-    allChildrenArePrivate?: boolean;
+    allChildrenArePrivate: boolean;
 
     /**
      * Are all children private or protected members?
      */
-    allChildrenAreProtectedOrPrivate?: boolean;
+    allChildrenAreProtectedOrPrivate: boolean;
 
     /**
      * Are all children external members?
      */
-    allChildrenAreExternal?: boolean;
+    allChildrenAreExternal: boolean;
 
     /**
      * Are any children exported declarations?
      */
-    someChildrenAreExported?: boolean;
-
-    /**
-     * Categories contained within this group.
-     */
-    categories?: ReflectionCategory[];
+    someChildrenAreExported: boolean;
 
     /**
      * Create a new ReflectionGroup instance.
@@ -87,7 +81,7 @@ export class ReflectionGroup {
     private getAllChildrenHaveOwnDocument(): boolean {
         let onlyOwnDocuments = true;
         this.children.forEach((child) => {
-            onlyOwnDocuments = onlyOwnDocuments && !!child.hasOwnDocument;
+            onlyOwnDocuments = onlyOwnDocuments && child.hasOwnDocument;
         });
 
         return onlyOwnDocuments;
@@ -110,15 +104,6 @@ export class ReflectionGroup {
             });
 
             result['children'] = children;
-        }
-
-        if (this.categories) {
-            const categories: any[] = [];
-            this.categories.forEach((category) => {
-                categories.push(category.toObject());
-            });
-
-            result['categories'] = categories;
         }
 
         return result;

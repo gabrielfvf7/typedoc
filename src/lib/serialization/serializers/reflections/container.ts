@@ -7,8 +7,9 @@ import { SourceReferenceWrapper } from '../models';
 @Component({name: 'serializer:container-reflection'})
 export class ContainerReflectionSerializer extends ReflectionSerializerComponent<ContainerReflection> {
 
-  supports(t: unknown) {
-    return t instanceof ContainerReflection;
+  initialize(): void {
+    super.initialize();
+    this.supports = (r: ContainerReflection) => r instanceof ContainerReflection;
   }
 
   toObject(container: ContainerReflection, obj?: any): any {
@@ -16,10 +17,6 @@ export class ContainerReflectionSerializer extends ReflectionSerializerComponent
 
     if (container.groups && container.groups.length > 0) {
       obj.groups = container.groups.map( group => this.owner.toObject(group) );
-    }
-
-    if (container.categories && container.categories.length > 0) {
-      obj.categories = container.categories.map( category => this.owner.toObject(category) );
     }
 
     if (container.sources && container.sources.length > 0) {

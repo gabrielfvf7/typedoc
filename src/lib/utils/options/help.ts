@@ -18,7 +18,9 @@ export interface ParameterHelp {
  */
 function getParameterHelp(options: Options, scope: ParameterScope): ParameterHelp {
     const parameters = options.getDeclarationsByScope(scope);
-    parameters.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+    parameters.sort((a, b) => {
+        return _ts.compareValues<string>(a.name.toLowerCase(), b.name.toLowerCase());
+    });
 
     const names: string[] = [];
     const helps: string[] = [];

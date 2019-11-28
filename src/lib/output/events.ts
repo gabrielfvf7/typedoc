@@ -1,4 +1,3 @@
-import { TemplateDelegate } from 'handlebars';
 import * as Path from 'path';
 
 import { Event } from '../utils/events';
@@ -17,7 +16,7 @@ export class RendererEvent extends Event {
     /**
      * The project the renderer is currently processing.
      */
-    readonly project: ProjectReflection;
+    project: ProjectReflection;
 
     /**
      * The settings that have been passed to TypeDoc.
@@ -27,14 +26,14 @@ export class RendererEvent extends Event {
     /**
      * The path of the directory the documentation should be written to.
      */
-    readonly outputDirectory: string;
+    outputDirectory: string;
 
     /**
      * A list of all pages that should be generated.
      *
      * This list can be altered during the [[Renderer.EVENT_BEGIN]] event.
      */
-    urls?: UrlMapping[];
+    urls: UrlMapping[];
 
     /**
      * Triggered before the renderer starts rendering a project.
@@ -47,12 +46,6 @@ export class RendererEvent extends Event {
      * @event
      */
     static END = 'endRender';
-
-    constructor(name: string, outputDirectory: string, project: ProjectReflection) {
-        super(name);
-        this.outputDirectory = outputDirectory;
-        this.project = project;
-    }
 
     /**
      * Create an [[PageEvent]] event based on this event and the given url mapping.
@@ -86,7 +79,7 @@ export class PageEvent extends Event {
     /**
      * The project the renderer is currently processing.
      */
-    project!: ProjectReflection;
+    project: ProjectReflection;
 
     /**
      * The settings that have been passed to TypeDoc.
@@ -96,12 +89,12 @@ export class PageEvent extends Event {
     /**
      * The filename the page will be written to.
      */
-    filename!: string;
+    filename: string;
 
     /**
      * The url this page will be located at.
      */
-    url!: string;
+    url: string;
 
     /**
      * The model that should be rendered on this page.
@@ -111,29 +104,29 @@ export class PageEvent extends Event {
     /**
      * The template that should be used to render this page.
      */
-    template?: TemplateDelegate;
+    template: HandlebarsTemplateDelegate;
 
     /**
      * The name of the template that should be used to render this page.
      */
-    templateName!: string;
+    templateName: string;
 
     /**
      * The primary navigation structure of this page.
      */
-    navigation?: NavigationItem;
+    navigation: NavigationItem;
 
     /**
      * The table of contents structure of this page.
      */
-    toc?: NavigationItem;
+    toc: NavigationItem;
 
     /**
      * The final html content of this page.
      *
      * Should be rendered by layout templates and can be modifies by plugins.
      */
-    contents?: string;
+    contents: string;
 
     /**
      * Triggered before a document will be rendered.
@@ -158,7 +151,7 @@ export class MarkdownEvent extends Event {
     /**
      * The unparsed original text.
      */
-    readonly originalText: string;
+    originalText: string;
 
     /**
      * The parsed output.
@@ -170,10 +163,4 @@ export class MarkdownEvent extends Event {
      * @event
      */
     static PARSE = 'parseMarkdown';
-
-    constructor(name: string, originalText: string, parsedText: string) {
-        super(name);
-        this.originalText = originalText;
-        this.parsedText = parsedText;
-    }
 }

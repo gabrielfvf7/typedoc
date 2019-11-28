@@ -9,18 +9,6 @@ import { RendererEvent, MarkdownEvent } from '../events';
 import { Option } from '../../utils/component';
 import { ParameterHint } from '../../utils/options/declaration';
 
-const customMarkedRenderer = new Marked.Renderer();
-
-customMarkedRenderer.heading = (text, level, _, slugger) => {
-  const slug = slugger.slug(text);
-
-  return `
-<a href="#${slug}" id="${slug}" style="color: inherit; text-decoration: none;">
-  <h${level}>${text}</h${level}>
-</a>
-`;
-};
-
 /**
  * A plugin that exposes the markdown, compact and relativeURL helper to handlebars.
  *
@@ -58,24 +46,24 @@ export class MarkedPlugin extends ContextAwareRendererComponent {
         help: 'Specifies the location to look for included documents (use [[include:FILENAME]] in comments).',
         hint: ParameterHint.Directory
     })
-    includeSource!: string;
+    includeSource: string;
 
     @Option({
         name: 'media',
         help: 'Specifies the location with media files that should be copied to the output directory.',
         hint: ParameterHint.Directory
     })
-    mediaSource!: string;
+    mediaSource: string;
 
     /**
      * The path referenced files are located in.
      */
-    private includes?: string;
+    private includes: string;
 
     /**
      * Path to the output media directory.
      */
-    private mediaDirectory?: string;
+    private mediaDirectory: string;
 
     /**
      * The pattern used to find references in markdown.
@@ -99,8 +87,7 @@ export class MarkedPlugin extends ContextAwareRendererComponent {
         Handlebars.registerHelper('relativeURL', (url: string) => url ? this.getRelativeUrl(url) : url);
 
         Marked.setOptions({
-            highlight: (text: any, lang: any) => this.getHighlighted(text, lang),
-            renderer: customMarkedRenderer
+            highlight: (text: any, lang: any) => this.getHighlighted(text, lang)
         });
     }
 
@@ -134,7 +121,7 @@ export class MarkedPlugin extends ContextAwareRendererComponent {
     public parseMarkdown(text: string, context: any) {
         if (this.includes) {
             text = text.replace(this.includePattern, (match: string, path: string) => {
-                path = Path.join(this.includes!, path.trim());
+                path = Path.join(this.includes, path.trim());
                 if (FS.existsSync(path) && FS.statSync(path).isFile()) {
                     const contents = FS.readFileSync(path, 'utf-8');
                     if (path.substr(-4).toLocaleLowerCase() === '.hbs') {
@@ -151,7 +138,7 @@ export class MarkedPlugin extends ContextAwareRendererComponent {
 
         if (this.mediaDirectory) {
             text = text.replace(this.mediaPattern, (match: string, path: string) => {
-                if (FS.existsSync(Path.join(this.mediaDirectory!, path))) {
+                if (FS.existsSync(Path.join(this.mediaDirectory, path))) {
                     return this.getRelativeUrl('media') + '/' + path;
                 } else {
                     return match;
@@ -159,7 +146,9 @@ export class MarkedPlugin extends ContextAwareRendererComponent {
             });
         }
 
-        const event = new MarkdownEvent(MarkdownEvent.PARSE, text, text);
+        const event = new MarkdownEvent(MarkdownEvent.PARSE);
+        event.originalText = text;
+        event.parsedText = text;
 
         this.owner.trigger(event);
         return event.parsedText;
@@ -189,7 +178,7 @@ export class MarkedPlugin extends ContextAwareRendererComponent {
                 this.mediaDirectory = Path.join(event.outputDirectory, 'media');
                 FS.copySync(media, this.mediaDirectory);
             } else {
-                this.mediaDirectory = undefined;
+                this.mediaDirectory = null;
                 this.application.logger.warn('Could not find provided media directory: ' + media);
             }
         }

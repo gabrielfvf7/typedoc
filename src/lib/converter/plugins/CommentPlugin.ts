@@ -38,14 +38,13 @@ interface ModuleComment {
 export class CommentPlugin extends ConverterComponent {
     /**
      * List of discovered module comments.
-     * Defined in this.onBegin
      */
-    private comments!: {[id: number]: ModuleComment};
+    private comments: {[id: number]: ModuleComment};
 
     /**
      * List of hidden reflections.
      */
-    private hidden?: Reflection[];
+    private hidden: Reflection[];
 
     /**
      * Create a new CommentPlugin instance.
@@ -63,7 +62,7 @@ export class CommentPlugin extends ConverterComponent {
     }
 
     private storeModuleComment(comment: string, reflection: Reflection) {
-        const isPreferred = (comment.toLowerCase().includes('@preferred'));
+        const isPreferred = (comment.toLowerCase().indexOf('@preferred') !== -1);
 
         if (this.comments[reflection.id]) {
             const info = this.comments[reflection.id];
@@ -110,10 +109,7 @@ export class CommentPlugin extends ConverterComponent {
             CommentPlugin.removeTags(comment, 'event');
         }
 
-        if (comment.hasTag('hidden')
-            || comment.hasTag('ignore')
-            || (comment.hasTag('internal') && this.application.options.getCompilerOptions().stripInternal)
-        ) {
+        if (comment.hasTag('hidden') || comment.hasTag('ignore')) {
             if (!this.hidden) {
                 this.hidden = [];
             }
@@ -127,7 +123,6 @@ export class CommentPlugin extends ConverterComponent {
      * @param context  The context object describing the current state the converter is in.
      */
     private onBegin(context: Context) {
-        this.hidden = undefined;
         this.comments = {};
     }
 
@@ -139,7 +134,7 @@ export class CommentPlugin extends ConverterComponent {
      * @param node  The node that is currently processed if available.
      */
     private onCreateTypeParameter(context: Context, reflection: TypeParameterReflection, node?: ts.Node) {
-        const comment = reflection.parent && reflection.parent.comment;
+        const comment = reflection.parent.comment;
         if (comment) {
             let tag = comment.getTag('typeparam', reflection.name);
             if (!tag) {
@@ -151,8 +146,7 @@ export class CommentPlugin extends ConverterComponent {
 
             if (tag) {
                 reflection.comment = new Comment(tag.text);
-                // comment.tags must be set if we found a tag.
-                comment.tags!.splice(comment.tags!.indexOf(tag), 1);
+                comment.tags.splice(comment.tags.indexOf(tag), 1);
             }
         }
     }
@@ -211,7 +205,7 @@ export class CommentPlugin extends ConverterComponent {
      * @param context  The context object describing the current state the converter is in.
      */
     private onBeginResolve(context: Context) {
-        for (const id in this.comments) {
+        for (let id in this.comments) {
             if (!this.comments.hasOwnProperty(id)) {
                 continue;
             }
@@ -226,7 +220,9 @@ export class CommentPlugin extends ConverterComponent {
 
         if (this.hidden) {
             const project = context.project;
-            CommentPlugin.removeReflections(project, this.hidden);
+            this.hidden.forEach((reflection) => {
+                CommentPlugin.removeReflection(project, reflection);
+            });
         }
     }
 
@@ -251,14 +247,14 @@ export class CommentPlugin extends ConverterComponent {
         if (signatures.length) {
             const comment = reflection.comment;
             if (comment && comment.hasTag('returns')) {
-                comment.returns = comment.getTag('returns')!.text;
+                comment.returns = comment.getTag('returns').text;
                 CommentPlugin.removeTags(comment, 'returns');
             }
 
             signatures.forEach((signature) => {
                 let childComment = signature.comment;
                 if (childComment && childComment.hasTag('returns')) {
-                    childComment.returns = childComment.getTag('returns')!.text;
+                    childComment.returns = childComment.getTag('returns').text;
                     CommentPlugin.removeTags(childComment, 'returns');
                 }
 
@@ -274,7 +270,7 @@ export class CommentPlugin extends ConverterComponent {
 
                 if (signature.parameters) {
                     signature.parameters.forEach((parameter) => {
-                        let tag: CommentTag | undefined;
+                        let tag: CommentTag;
                         if (childComment) {
                             tag = childComment.getTag('param', parameter.name);
                         }
@@ -300,7 +296,7 @@ export class CommentPlugin extends ConverterComponent {
      * @param comment  The comment that should be modified.
      * @param tagName  The name of the that that should be removed.
      */
-    static removeTags(comment: Comment | undefined, tagName: string) {
+    static removeTags(comment: Comment, tagName: string) {
         if (!comment || !comment.tags) {
             return;
         }
@@ -317,26 +313,10 @@ export class CommentPlugin extends ConverterComponent {
     }
 
     /**
-     * Remove the specified reflections from the project.
-     */
-    static removeReflections(project: ProjectReflection, reflections: Reflection[]) {
-        const deletedIds: number[] = [];
-        reflections.forEach((reflection) => {
-            CommentPlugin.removeReflection(project, reflection, deletedIds);
-        });
-
-        for (const key in project.symbolMapping) {
-            if (project.symbolMapping.hasOwnProperty(key) && deletedIds.includes(project.symbolMapping[key])) {
-                delete project.symbolMapping[key];
-            }
-        }
-    }
-
-    /**
      * Remove the given reflection from the project.
      */
-    static removeReflection(project: ProjectReflection, reflection: Reflection, deletedIds?: number[]) {
-        reflection.traverse((child) => CommentPlugin.removeReflection(project, child, deletedIds));
+    static removeReflection(project: ProjectReflection, reflection: Reflection) {
+        reflection.traverse((child) => CommentPlugin.removeReflection(project, child));
 
         const parent = <DeclarationReflection> reflection.parent;
         parent.traverse((child: Reflection, property: TraverseProperty) => {
@@ -358,9 +338,9 @@ export class CommentPlugin extends ConverterComponent {
                         break;
                     case TraverseProperty.Parameters:
                         if ((<SignatureReflection> reflection.parent).parameters) {
-                            const index = (<SignatureReflection> reflection.parent).parameters!.indexOf(<ParameterReflection> reflection);
+                            const index = (<SignatureReflection> reflection.parent).parameters.indexOf(<ParameterReflection> reflection);
                             if (index !== -1) {
-                                (<SignatureReflection> reflection.parent).parameters!.splice(index, 1);
+                                (<SignatureReflection> reflection.parent).parameters.splice(index, 1);
                             }
                         }
                         break;
@@ -390,19 +370,13 @@ export class CommentPlugin extends ConverterComponent {
             }
         });
 
-        const id = reflection.id;
+        let id = reflection.id;
         delete project.reflections[id];
 
-        // if an array was provided, keep track of the reflections that have been deleted, otherwise clean symbol mappings
-        if (deletedIds) {
-            deletedIds.push(id);
-        } else {
-            for (const key in project.symbolMapping) {
-                if (project.symbolMapping.hasOwnProperty(key) && project.symbolMapping[key] === id) {
-                    delete project.symbolMapping[key];
-                }
+        for (let key in project.symbolMapping) {
+            if (project.symbolMapping.hasOwnProperty(key) && project.symbolMapping[key] === id) {
+                delete project.symbolMapping[key];
             }
         }
-
     }
 }

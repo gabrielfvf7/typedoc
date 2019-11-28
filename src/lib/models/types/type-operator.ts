@@ -18,7 +18,7 @@ export class TypeOperatorType extends Type {
 
     // currently, there is only one type operator, this is always "keyof"
     // but, if more types will be added in the future we are ready.
-    readonly operator = 'keyof';
+    operator: 'keyof' = 'keyof';
 
     constructor(target: Type) {
         super();
@@ -62,6 +62,6 @@ export class TypeOperatorType extends Type {
      * Return a string representation of this type.
      */
     toString() {
-        return `${this.operator} ${this.target.toString()}`;
+        return `keyof ${this.target.toString()}`;
     }
 }

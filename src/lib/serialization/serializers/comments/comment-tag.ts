@@ -11,14 +11,17 @@ export class CommentTagSerializer extends SerializerComponent<CommentTag> {
   /**
    * Filter for instances of [[CommentTag]]
    */
-  serializeGroup(instance: unknown): boolean {
+  protected static serializeGroup(instance: any): boolean {
     return instance instanceof CommentTag;
   }
 
+  // use same fn for every instance
+  serializeGroup = CommentTagSerializer.serializeGroup;
   serializeGroupSymbol = CommentTag;
 
-  supports(t: unknown) {
-    return true;
+  initialize(): void {
+    super.initialize();
+    this.supports = (r: CommentTag) => true;
   }
 
   toObject(tag: CommentTag, obj?: any): any {

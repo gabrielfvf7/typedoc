@@ -4,7 +4,7 @@
  * ## Some Markup
  * **with more markup**
  *
- * An example with decorators that should not parse to tag
+ * A example with decorators that should not parse to tag
  * ```
  * @myDecorator
  * @FactoryDecorator('a', 'b', 'c')

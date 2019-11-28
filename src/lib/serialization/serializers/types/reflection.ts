@@ -6,10 +6,11 @@ import { TypeSerializerComponent } from '../../components';
 @Component({name: 'serializer:reflection-type'})
 export class ReflectionTypeSerializer extends TypeSerializerComponent<ReflectionType> {
 
-  private declaration?: DeclarationReflection;
+  private declaration: DeclarationReflection;
 
-  supports(t: unknown) {
-    return t instanceof ReflectionType;
+  initialize(): void {
+    super.initialize();
+    this.supports = (t: ReflectionType) => t instanceof ReflectionType;
   }
 
   toObject(reference: ReflectionType, obj?: any): any {
